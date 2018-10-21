@@ -3,11 +3,12 @@ import './App.css';
 import styled from "styled-components";
 
 const GreenElement = styled.div`
-  color: green;
+  color: yellow;
   font-size: 30px;
+  font-family: 'Mali', cursive;
 `;
 const BlueElement = styled(GreenElement)`
-  color: blue;
+  color: grey;
 `;
 
 // extend the green element
@@ -19,10 +20,10 @@ class App extends Component {
     return (
       <div>
       <GreenElement>
-        hello
+        Hello, I'm little piggy
       </GreenElement>
       <BlueElement>
-      hello
+       Love you !
       </BlueElement>
       </div>
     );
