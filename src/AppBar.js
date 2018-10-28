@@ -26,7 +26,7 @@ const ControlButton = styled.div`
 
 export default function() {
 
-    console.log('Hello', this.state);
+    {/*console.log('Hello', this.state);*/}
     return <Bar>
         <Logo>
             Home page

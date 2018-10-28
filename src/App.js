@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import './App.css';
 import styled, {css} from "styled-components";
+import CoinList from './CoinList';
 import AppBar from './AppBar';
+
 const cc = require('cryptocompare');
 
 //page 最外层，加 padding
@@ -40,18 +42,18 @@ const checkFirstVisit = () =>{
 
 class App extends Component {
     state = {
-        page: 'dashboard',
+        page: 'settings',
         ...checkFirstVisit()
     };
 
     componentDidMount = () => {
         this.fetchCoins();
-    }
+    };
     fetchCoins = async () => {
-        let coinsList = (await cc .coinList()).Data;
-        //console.log('Fetching coins....');
-        this.setState({coinsList});
-    }
+        //just test :  console.log('Fetching coins....');
+        let coinList = (await cc.coinList()).Data;
+        this.setState({ coinList });
+    };
     // set the page state as dashboard
     displayingDashboard = () => this.state.page === 'dashboard';
     // set the page state as settings
@@ -59,12 +61,16 @@ class App extends Component {
     // print the first visit message: "Welcome to xxxxx"
     firstVisitMessage = () => {
         if(this.state.firstVisit){
-            return <div> Welcome to this page !</div>
+            return (
+                <div>
+                    Welcome to this page !
+                </div>
+            );
         }
     };
     // confirm the first visit, jump to dashboard
     confirmFavorites = () =>{
-        localStorage.setItem('cryptoDash','test');
+        //localStorage.setItem('cryptoDash','test');
         this.setState({
             firstVisit: false,
             page: 'dashboard',
@@ -72,19 +78,24 @@ class App extends Component {
     };
     // add settings confirm content
     settingsContent = () =>{
-        return <div>
-             {this.firstVisitMessage()}
-             <div onClick = {this.confirmFavorites}>
+        return (
+            <div>
+              {this.firstVisitMessage()}
+              <div onClick = {this.confirmFavorites}>
                  Confirm Favorites
-             </div>
-         </div>
+              </div>
+              <div>
+               {CoinList.call(this)}
+              </div>
+            </div>
+        );
     };
 
     loadingContent = () => {
-        if(!this.state.coinList){
-            return <div> Loading Coins </div>
+        if(!this.state.coinList) {
+            return <div> Loading Coins </div>;
         }
-    }
+    };
 
   render() {
     return (
@@ -93,16 +104,24 @@ class App extends Component {
          {/* menu bar , cut and copy to the AppBar.js*/}
 
          {/* always display content */}
-         <GreenElement>
-            Hello, I'm little piggy
-         </GreenElement>
-         <BlueElement>
-            Love you !
-         </BlueElement>
-            {this.loadingContent() || <Content>
-               Hello, I'm {this.state.page}
-               {this.displayingSettings() && this.settingsContent()}
-             </Content>}
+
+          {/*
+              <GreenElement>
+                   Hello, I'm little piggy
+              </GreenElement>
+              <BlueElement>
+                   Love you !
+              </BlueElement>
+
+          */}
+
+           {this.loadingContent() || (
+                <Content>
+                   {/* I'm dashboard and I'm settings : Hello, I'm {this.state.page}*/}
+                   { this.displayingSettings() && this.settingsContent() }
+                </Content>
+           )}
+
 
 
      </AppLayout>
