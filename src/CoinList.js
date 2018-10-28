@@ -11,7 +11,7 @@ export default function() {
 */
 import React from 'react';
 import styled, {css} from "styled-components";
-import {subtleBoxShadow, lightBlueBackground, greenBoxShadow} from "./style";
+import {subtleBoxShadow, lightBlueBackground, greenBoxShadow, redBoxShadow} from "./style";
 
 const CoinGrid = styled.div`
     display: grid;
@@ -37,7 +37,18 @@ const CoinTitle = styled.div`
        cursor: pointer;
        ${greenBoxShadow}
     }
+    ${props => 
+     // 这里 favorite 如果改成 favorites 就会是绿色，变不了红色
+      props.favorite && css`
+       &:hover{
+         cursor: pointer;
+         ${redBoxShadow};
+       }
+    
+    `}
 `;
+
+
 
 const CoinHeaderGrid = styled.div`
     display: grid;
@@ -48,10 +59,15 @@ const CoinSymbol = styled.div`
     justify-self: right;
 `;
 
-export default function(){
+export default function(favorites = false){
+    console.log('CoinSample', this.state.coinList['BTC']);
+    let coinKeys = favorites ? this.state.favorites : Object.keys(this.state.coinList).slice(0,100);
     return <CoinGrid>
-        {Object.keys(this.state.coinList).map(coin =>
-            <CoinTitle>
+        {/*{Object.keys(this.state.coinList).map(coin =>*/}
+        {coinKeys.map(coin =>
+            <CoinTitle
+                favorite={favorites}
+            >
                 <CoinHeaderGrid>
                     <div> {this.state.coinList[coin].CoinName} </div>
                     <CoinSymbol> {this.state.coinList[coin].Symbol} </CoinSymbol>

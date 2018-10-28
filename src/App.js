@@ -43,6 +43,7 @@ const checkFirstVisit = () =>{
 class App extends Component {
     state = {
         page: 'settings',
+        favorites: ['ETH', 'BTC', 'XMR', 'DOGE', 'EOS'],
         ...checkFirstVisit()
     };
 
@@ -85,7 +86,10 @@ class App extends Component {
                  Confirm Favorites
               </div>
               <div>
-               {CoinList.call(this)}
+                  {/* 显示 favorites 的这五个在最上面一行：
+                  favorites: ['ETH', 'BTC', 'XMR', 'DOGE', 'EOS'],*/}
+                  {CoinList.call(this, true)}
+                  {CoinList.call(this)}
               </div>
             </div>
         );
