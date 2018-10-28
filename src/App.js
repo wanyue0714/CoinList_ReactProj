@@ -3,6 +3,7 @@ import './App.css';
 import styled, {css} from "styled-components";
 import CoinList from './CoinList';
 import AppBar from './AppBar';
+import _ from 'lodash';
 
 const cc = require('cryptocompare');
 
@@ -27,6 +28,7 @@ const Content = styled.div`
  
 `;
 
+const MAX_FAVORITES = 10;
 
 const checkFirstVisit = () =>{
     let cryptoDashData = localStorage.getItem('cryptoDash');
@@ -99,6 +101,19 @@ class App extends Component {
         if(!this.state.coinList) {
             return <div> Loading Coins </div>;
         }
+    };
+
+    addCoinToFavorites = (key) => {
+       let favorites = [...this.state.favorites];
+       if (favorites.length < MAX_FAVORITES) {
+           favorites.push(key);
+           this.setState({favorites});
+       }
+    };
+
+    removeCoinFromFavorites = (key) => {
+        let favorites = [...this.state.favorites];
+        this.setState({favorites:_.pull(favorites, key)});
     };
 
   render() {
