@@ -46,6 +46,14 @@ const CoinTitle = styled.div`
        }
     
     `}
+    
+    ${props => 
+    // chosen 的就显示为透明不可选
+    props.chosen && !props.favorite && css`
+       // none就是不可选的意思
+       pointer-events: none;
+       opacity: 0.4;
+    `}
 `;
 
 
@@ -59,6 +67,15 @@ const CoinSymbol = styled.div`
     justify-self: right;
 `;
 
+const DeleteIcon = styled.div`
+    justify-self: right;
+    display: none;
+    ${CoinTitle}:hover & {
+       display: block;
+       color : red;
+    }
+`;
+
 export default function(favorites = false){
     console.log('CoinSample', this.state.coinList['BTC']);
     let coinKeys = favorites ? this.state.favorites : Object.keys(this.state.coinList).slice(0,100);
@@ -66,13 +83,15 @@ export default function(favorites = false){
         {/*{Object.keys(this.state.coinList).map(coin =>*/}
         {coinKeys.map(coinKey =>
             <CoinTitle
+                // 选之前先判断一下是否选过了
+                chosen = {this.isInFavorites(coinKey)}
                 favorite= {favorites}
                 onClick={
                     favorites ? () => {this.removeCoinFromFavorites(coinKey)} : () => { this.addCoinToFavorites(coinKey); }}
             >
                 <CoinHeaderGrid>
                     <div> {this.state.coinList[coinKey].CoinName} </div>
-                    <CoinSymbol> {this.state.coinList[coinKey].Symbol} </CoinSymbol>
+                    {favorites ? <DeleteIcon>delete</DeleteIcon> : <CoinSymbol> {this.state.coinList[coinKey].Symbol} </CoinSymbol>}
                 </CoinHeaderGrid>
                 <img
                     style = {{ height: '50px' }}

@@ -113,8 +113,13 @@ class App extends Component {
 
     removeCoinFromFavorites = (key) => {
         let favorites = [...this.state.favorites];
+        // pull 得到所有 favorites
         this.setState({favorites:_.pull(favorites, key)});
     };
+
+    // avoid duplicates
+    isInFavorites = (key) => _.includes(this.state.favorites, key);
+
 
   render() {
     return (
