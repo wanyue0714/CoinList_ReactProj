@@ -12,12 +12,18 @@ export default function() {
 import React from 'react';
 import styled, {css} from "styled-components";
 import {subtleBoxShadow, lightBlueBackground, greenBoxShadow, redBoxShadow} from "./style";
+import _ from 'lodash';
 
 const CoinGrid = styled.div`
     display: grid;
     
     // grid 分成五个 cols
     grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+    
+    //put all the favorites in one row
+    ${props => props.count && css`
+         grid-template-columns: repeat(${props.count > 5 ? props.count : 5}, 1fr);
+    `} 
     
     // 格子和格子之间会产生一个空隙
     grid-gap: 15px;
@@ -37,7 +43,7 @@ const CoinTitle = styled.div`
        cursor: pointer;
        ${greenBoxShadow}
     }
-    ${props => 
+    ${props =>
      // 这里 favorite 如果改成 favorites 就会是绿色，变不了红色
       props.favorite && css`
        &:hover{
@@ -46,8 +52,8 @@ const CoinTitle = styled.div`
        }
     
     `}
-    
-    ${props => 
+
+    ${props =>
     // chosen 的就显示为透明不可选
     props.chosen && !props.favorite && css`
        // none就是不可选的意思
@@ -78,8 +84,11 @@ const DeleteIcon = styled.div`
 
 export default function(favorites = false){
     console.log('CoinSample', this.state.coinList['BTC']);
-    let coinKeys = favorites ? this.state.favorites : Object.keys(this.state.coinList).slice(0,100);
-    return <CoinGrid>
+    let coinKeys = favorites ?
+        this.state.favorites
+        // if we delete the input value in the search box, it would return all the coinlist
+        : ((this.state.filteredCoins && Object.keys(this.state.filteredCoins)) || Object.keys(this.state.coinList).slice(0,100));
+    return <CoinGrid count={favorites && this.state.favorites.length}>
         {/*{Object.keys(this.state.coinList).map(coin =>*/}
         {coinKeys.map(coinKey =>
             <CoinTitle
