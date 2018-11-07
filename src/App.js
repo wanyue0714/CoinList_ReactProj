@@ -3,6 +3,7 @@ import './App.css';
 import styled, {css} from "styled-components";
 import CoinList from './CoinList';
 import Search from './Search';
+import Dashboard from './Dashboard';
 import AppBar from './AppBar';
 import fuzzy from 'fuzzy';
 
@@ -44,31 +45,56 @@ const Content = styled.div`
 const MAX_FAVORITES = 10;
 
 const checkFirstVisit = () =>{
-    let cryptoDashData = localStorage.getItem('cryptoDash');
+    let cryptoDashData = JSON.parse(localStorage.getItem('cryptoDash'));
     if(!cryptoDashData){
         return{
             firstVisit: true,
             page: 'settings'
         }
     }
-    return {};
+    return {
+        favorites: cryptoDashData.favorites
+    };
 }
 
 
 class App extends Component {
     state = {
-        page: 'settings',
+        page: 'dashboard',
         favorites: ['ETH', 'BTC', 'XMR', 'DOGE', 'EOS'],
         ...checkFirstVisit()
     };
 
     componentDidMount = () => {
         this.fetchCoins();
+        this.fetchPrices();
     };
     fetchCoins = async () => {
         //just test :  console.log('Fetching coins....');
         let coinList = (await cc.coinList()).Data;
         this.setState({ coinList });
+    };
+    fetchPrices = async () => {
+        if (this.state.firstVisit) return;
+        let prices;
+        try{
+            prices = await this.prices();
+        }catch(e){
+            this.setState({error: true});
+        }
+        this.setState({ prices });
+    };
+    prices = async () => {
+        let returnData = [];
+        for (let i = 0; i < this.state.favorites.length; i++) {
+            try {
+                let priceData = await cc.priceFull(this.state.favorites[i], 'USD');
+                returnData.push(priceData);
+            } catch (e) {
+                console.warn('Fetch price error: ', e);
+            }
+        }
+        return returnData;
     };
     // set the page state as dashboard
     displayingDashboard = () => this.state.page === 'dashboard';
@@ -90,7 +116,9 @@ class App extends Component {
         this.setState({
             firstVisit: false,
             page: 'dashboard',
+            prices: null
         });
+        this.fetchPrices();
         localStorage.setItem('cryptoDash', JSON.stringify({
             favorites: this.state.favorites
 
@@ -123,6 +151,10 @@ class App extends Component {
     loadingContent = () => {
         if(!this.state.coinList) {
             return <div> Loading Coins </div>;
+        }
+        //没有 prices 时显示 loading prices
+        if (!this.state.firstVisit && !this.state.prices) {
+            return <div> Loading Prices </div>;
         }
     };
 
@@ -194,6 +226,7 @@ class App extends Component {
                 <Content>
                    {/* I'm dashboard and I'm settings : Hello, I'm {this.state.page}*/}
                    { this.displayingSettings() && this.settingsContent() }
+                    {this.displayingDashboard() && Dashboard.call(this)}
                 </Content>
            )}
 

@@ -14,7 +14,7 @@ import styled, {css} from "styled-components";
 import {subtleBoxShadow, lightBlueBackground, greenBoxShadow, redBoxShadow} from "./style";
 import _ from 'lodash';
 
-const CoinGrid = styled.div`
+export const CoinGrid = styled.div`
     display: grid;
     
     // grid 分成五个 cols
@@ -32,7 +32,7 @@ const CoinGrid = styled.div`
     margin-top: 40px;
 `;
 
-const CoinTitle = styled.div`
+export const CoinTile = styled.div`
     ${subtleBoxShadow}
     ${lightBlueBackground}
     // 如果不 comment border， boxshadow 就不会 work
@@ -64,19 +64,19 @@ const CoinTitle = styled.div`
 
 
 
-const CoinHeaderGrid = styled.div`
+export const CoinHeaderGrid = styled.div`
     display: grid;
     grid-template-columns: 1fr 1fr;
 `;
 
-const CoinSymbol = styled.div`
+export const CoinSymbol = styled.div`
     justify-self: right;
 `;
 
 const DeleteIcon = styled.div`
     justify-self: right;
     display: none;
-    ${CoinTitle}:hover & {
+    ${CoinTile}:hover & {
        display: block;
        color : red;
     }
@@ -91,7 +91,7 @@ export default function(favorites = false){
     return <CoinGrid count={favorites && this.state.favorites.length}>
         {/*{Object.keys(this.state.coinList).map(coin =>*/}
         {coinKeys.map(coinKey =>
-            <CoinTitle
+            <CoinTile
                 // 选之前先判断一下是否选过了
                 chosen = {this.isInFavorites(coinKey)}
                 favorite= {favorites}
@@ -108,7 +108,7 @@ export default function(favorites = false){
                         this.state.coinList[coinKey].ImageUrl
                     }`}
                 />
-            </CoinTitle>
+            </CoinTile>
         )}
     </CoinGrid>
 }
