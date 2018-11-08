@@ -9,11 +9,10 @@ import {
     fontSize2,
     backgroundColor2
 } from './style';
-// import highchartsConfig from './HighchartsConfig';
-// import theme from './HighchartsTheme';
-// const ReactHighcharts = require('react-highcharts');
-//
-// ReactHighcharts.Highcharts.setOptions(theme);
+import highchartsConfig from './HighchartsConfig';
+import theme from './HighchartsTheme';
+const ReactHighcharts = require('react-highcharts');
+ReactHighcharts.Highcharts.setOptions(theme);
 
 const numberFormat = number => {
     return +(number + '').slice(0, 7);
@@ -127,21 +126,10 @@ export default function() {
                />
            </PaddingBlue>
            <PaddingBlue>
-               {/*<ChartSelect*/}
-                   {/*defaultValue={'months'}*/}
-                   {/*onChange={e => {*/}
-                       {/*this.setState({ timeInterval: e.target.value, historical: null }, this.fetchHistorical);*/}
-                   {/*}}*/}
-               {/*>*/}
-                   {/*<option value="days">Days</option>*/}
-                   {/*<option value="weeks">Weeks</option>*/}
-                   {/*<option value="months">Months</option>*/}
-               {/*</ChartSelect>*/}
-               {/*{this.state.historical ? (*/}
-                   {/*<ReactHighcharts config={highchartsConfig.call(this)} />*/}
-               {/*) : (*/}
-                   {/*<div> Loading historical data </div>*/}
-               {/*)}*/}
+
+                    {/*this is the react highcharts config call*/}
+                   <ReactHighcharts config={highchartsConfig.call(this)} />
+
            </PaddingBlue>
         </ChartGrid>]
 }
