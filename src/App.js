@@ -161,7 +161,8 @@ class App extends Component {
             prices: null,
             currentFavorite,
             historical: null
-        }, () => {
+        },
+            () => {
             this.fetchPrices();
             this.fetchHistorical();
         });

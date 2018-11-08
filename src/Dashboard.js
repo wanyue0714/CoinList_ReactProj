@@ -84,7 +84,6 @@ export default function() {
                             currentFavorite: sym
                         })
                     );
-                    this.fetchHistorical();
                 }
             };
             return index < 5 ? (<CoinTile {...tileProps}>
