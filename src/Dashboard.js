@@ -64,7 +64,8 @@ const ChartGrid = styled.div`
 `;
 
 export default function() {
-    return [<CoinGrid>
+    return [
+        <CoinGrid  key={'coingrid'}>
         {this.state.prices.map((price , index) => {
             let sym = Object.keys(price)[0];
             let data = price[sym]['USD'];
@@ -83,9 +84,10 @@ export default function() {
                             currentFavorite: sym
                         })
                     );
+                    this.fetchHistorical();
                 }
             };
-            return index < 5 ? <CoinTile {...tileProps}>
+            return index < 5 ? (<CoinTile {...tileProps}>
                 <CoinHeaderGrid>
                     {/*display coin symbol*/}
                     <div>{sym}</div>
@@ -98,7 +100,8 @@ export default function() {
                 </CoinHeaderGrid>
                 {/*display the price in bigger font*/}
                 <TickerPrice>${numberFormat(data.PRICE)} </TickerPrice>
-            </CoinTile> :
+            </CoinTile>
+           ): (
             <CoinTileCompact {...tileProps}>
                 <div>{sym}</div>
                 <CoinSymbol>
@@ -109,7 +112,7 @@ export default function() {
                 </CoinSymbol>
                 {/*display the price in bigger font*/}
                 <div>${numberFormat(data.PRICE)} </div>
-            </CoinTileCompact>
+            </CoinTileCompact>);
         })
         }</CoinGrid>,
 
@@ -126,10 +129,25 @@ export default function() {
                />
            </PaddingBlue>
            <PaddingBlue>
-
-                    {/*this is the react highcharts config call*/}
+               <ChartSelect
+                   // by default, display data in 10 days
+                  defaultValue={'weeks'}
+                  // change time interval, and get history data
+                  onChange={e => {
+                     this.setState({ timeInterval: e.target.value, historical: null }, this.fetchHistorical);
+                  }}
+               >
+                   {/*choose data in 10 days, 10 months, 10 years*/}
+                   <option value="days">Days</option>
+                   <option value="weeks">Weeks</option>
+                   <option value="months">Months</option>
+               </ChartSelect>
+               {this.state.historical ? (
+                   // get historical data, and call highcharts config file => show data in charts
                    <ReactHighcharts config={highchartsConfig.call(this)} />
-
+               ) : (
+                   <div> Loading historical data </div>
+               )}
            </PaddingBlue>
         </ChartGrid>]
 }

@@ -6,8 +6,9 @@ import Search from './Search';
 import Dashboard from './Dashboard';
 import AppBar from './AppBar';
 import fuzzy from 'fuzzy';
-
 import _ from 'lodash';
+import moment from 'moment';
+
 import {ConfirmButton} from "./Button";
 
 
@@ -43,6 +44,8 @@ const Content = styled.div`
 `;
 
 const MAX_FAVORITES = 10;
+// 10 days, 10 months, 10 years
+const TIME_UNITS = 10;
 
 const checkFirstVisit = () =>{
     let cryptoDashData = JSON.parse(localStorage.getItem('cryptoDash'));
@@ -68,8 +71,11 @@ class App extends Component {
     };
 
     componentDidMount = () => {
+        // this function is for charts
+        this.fetchHistorical();
         this.fetchCoins();
         this.fetchPrices();
+
     };
     fetchCoins = async () => {
         //just test :  console.log('Fetching coins....');
@@ -85,6 +91,39 @@ class App extends Component {
             this.setState({error: true});
         }
         this.setState({ prices });
+    };
+    fetchHistorical = async () => {
+        //if (this.state.firstVisit) return;
+        if (this.state.currentFavorite){
+            let results = await this.historical();
+            let historical = [
+                {
+                    name: this.state.currentFavorite,
+                    data: results.map((ticker, index) => [
+                        moment()
+                            .subtract({ [this.state.timeInterval]: TIME_UNITS - index })
+                            .valueOf(),
+                        ticker.USD
+                    ])
+                }
+            ];
+            this.setState({ historical });
+        }
+    };
+    historical = () => {
+        let promises = [];
+        for (let units = TIME_UNITS; units > 0; units--) {
+            promises.push(
+                cc.priceHistorical(
+                    this.state.currentFavorite,
+                    ['USD'],
+                    moment()
+                        .subtract({ [this.state.timeInterval]: units })
+                        .toDate()
+                )
+            );
+        }
+        return Promise.all(promises);
     };
     prices = async () => {
         let returnData = [];
@@ -119,9 +158,14 @@ class App extends Component {
         this.setState({
             firstVisit: false,
             page: 'dashboard',
-            prices: null
+            prices: null,
+            currentFavorite,
+            historical: null
+        }, () => {
+            this.fetchPrices();
+            this.fetchHistorical();
         });
-        this.fetchPrices();
+
         localStorage.setItem('cryptoDash', JSON.stringify({
             favorites: this.state.favorites,
             currentFavorite
