@@ -9,6 +9,11 @@ import {
     fontSize2,
     backgroundColor2
 } from './style';
+// import highchartsConfig from './HighchartsConfig';
+// import theme from './HighchartsTheme';
+// const ReactHighcharts = require('react-highcharts');
+//
+// ReactHighcharts.Highcharts.setOptions(theme);
 
 const numberFormat = number => {
     return +(number + '').slice(0, 7);
@@ -45,19 +50,43 @@ const CoinTileCompact = styled(CoinTile)`
   justify-items: right; 
 `;
 
+const PaddingBlue = styled.div`
+  ${subtleBoxShadow} 
+  ${lightBlueBackground}
+	padding: 10px;
+`;
+
 const ChartGrid = styled.div`
   display: grid;
   margin-top: 20px;
   grid-gap: 15px;
+  // image chart is 1:3 cols
   grid-template-columns: 1fr 3fr;
 `;
 
 export default function() {
-    return <CoinGrid>
+    return [<CoinGrid>
         {this.state.prices.map((price , index) => {
             let sym = Object.keys(price)[0];
             let data = price[sym]['USD'];
-            return index < 5 ? <CoinTile>
+            let tileProps = {
+               dashboardFavorite: sym === this.state.currentFavorite,
+                // 点击的时候改变 currentfavorite 的值，更新 img
+                onClick: () => {
+                    this.setState(
+                        { currentFavorite: sym, historical: null },
+                        this.fetchHistorical
+                    );
+                    localStorage.setItem(
+                        'cryptoDash',
+                        JSON.stringify({
+                            ...JSON.parse(localStorage.getItem('cryptoDash')),
+                            currentFavorite: sym
+                        })
+                    );
+                }
+            };
+            return index < 5 ? <CoinTile {...tileProps}>
                 <CoinHeaderGrid>
                     {/*display coin symbol*/}
                     <div>{sym}</div>
@@ -71,7 +100,7 @@ export default function() {
                 {/*display the price in bigger font*/}
                 <TickerPrice>${numberFormat(data.PRICE)} </TickerPrice>
             </CoinTile> :
-            <CoinTileCompact>
+            <CoinTileCompact {...tileProps}>
                 <div>{sym}</div>
                 <CoinSymbol>
                 {/*if the price is increasing, display in green, otherwise, display in red*/}
@@ -83,6 +112,37 @@ export default function() {
                 <div>${numberFormat(data.PRICE)} </div>
             </CoinTileCompact>
         })
-        }</CoinGrid>
+        }</CoinGrid>,
+
+        // this is the coin image part
+        <ChartGrid key={'chartgrid'}>
+           <PaddingBlue>
+               <h2 style={{textAlign: 'center'}}>{this.state.coinList[this.state.currentFavorite].CoinName}</h2>
+               <img
+                   alt={this.state.currentFavorite}
+                   style={{ height: '200px', display: 'block', margin: 'auto' }}
+                   src={`http://cryptocompare.com/${
+                       this.state.coinList[this.state.currentFavorite].ImageUrl
+                       }`}
+               />
+           </PaddingBlue>
+           <PaddingBlue>
+               {/*<ChartSelect*/}
+                   {/*defaultValue={'months'}*/}
+                   {/*onChange={e => {*/}
+                       {/*this.setState({ timeInterval: e.target.value, historical: null }, this.fetchHistorical);*/}
+                   {/*}}*/}
+               {/*>*/}
+                   {/*<option value="days">Days</option>*/}
+                   {/*<option value="weeks">Weeks</option>*/}
+                   {/*<option value="months">Months</option>*/}
+               {/*</ChartSelect>*/}
+               {/*{this.state.historical ? (*/}
+                   {/*<ReactHighcharts config={highchartsConfig.call(this)} />*/}
+               {/*) : (*/}
+                   {/*<div> Loading historical data </div>*/}
+               {/*)}*/}
+           </PaddingBlue>
+        </ChartGrid>]
 }
 

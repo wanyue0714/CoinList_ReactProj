@@ -52,6 +52,14 @@ export const CoinTile = styled.div`
        }
     
     `}
+    // mouse hover dashboard coin favorites show green box
+    ${props =>
+      props.dashboardFavorite &&css`
+        &:hover {
+          pointer-events: none;
+          ${greenBoxShadow};
+        }
+    `}
 
     ${props =>
     // chosen 的就显示为透明不可选
